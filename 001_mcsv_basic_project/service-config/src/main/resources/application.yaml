@@ -1,0 +1,12 @@
+server:
+  port: 8081
+spring:
+  cloud:
+    config:
+      server:
+        git:
+          default-label: spring_002_mcsv_users_cars_bikes
+          uri: https://github.com/Daniel-LA0303/spring_005_cloud_mcsv
+          search-paths: spring_002_mcsv_users_cars_bikes/config-data
+  application:
+    name: service-config

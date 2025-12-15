@@ -1,0 +1,19 @@
+spring:
+  security:
+    oauth2:
+      resourceserver:
+        jwt:
+          issuer-uri: ${LB_AUTH_ISSUER_URI:http://127.0.0.1:9000}
+      client:
+        registration:
+          mcsv-users-client:
+            provider: spring
+            client-id: users-client
+            client-secret: 1234
+            authorization-grant-type: authorization_code
+            redirect-uri: ${LB_USERS_URI:http://127.0.0.1:8081}/authorized
+            scope: read,write
+            client-name: mcsv-users-client
+        provider:
+            spring:
+              issuer-uri: ${LB_AUTH_ISSUER_URI:http://127.0.0.1:9000}

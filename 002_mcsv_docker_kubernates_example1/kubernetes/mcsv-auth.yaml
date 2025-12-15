@@ -1,0 +1,38 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: mcsv-auth-container
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      role: mcsv-auth-container
+  template:   
+    metadata:
+      labels:
+        role: mcsv-auth-container 
+    spec:
+      containers:
+        - image: daniella03/mcsv-auth:v5
+          name: mcsv-auth-container
+          ports:
+            - containerPort: 9000
+          env:
+            - name: LB_USERS_URI
+              valueFrom:
+                configMapKeyRef:
+                  name: mcsv-users-container
+                  key: lb_users_uri
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: mcsv-auth-container
+spec:
+  selector:
+    role: mcsv-auth-container
+  ports:
+    - protocol: TCP
+      port: 9000
+      targetPort: 9000
+  type: LoadBalancer

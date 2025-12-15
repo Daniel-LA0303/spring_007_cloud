@@ -1,0 +1,43 @@
+version: "3.9"
+services:
+  postgres14:
+    container_name: postgres14
+    image: postgres:15-alpine
+    ports:
+      - "5533:5432"
+    environment:
+      POSTGRES_PASSWORD: 1234
+      POSTGRES_DB: spring_014_db_mcsv_user
+    volumes:
+      - data-postgres:/var/lib/postgresql/data
+    #restart: always
+    networks:
+      - spring-kubernetes
+  #container 2
+  mcsv-courses-container:
+    container_name: mcsv-courses-container
+    image: daniella03/mcsv-course
+    ports:
+      - "8082:8082"
+    environment:
+      PORT: 8082
+      DB_HOST: postgres14
+      DB_DATABASE: spring_014_db_mcsv_user
+      DB_USERNAME: postgres
+      DB_PASSWORD: 1234
+      USER_URL: ec2-18-222-239-213.us-east-2.compute.amazonaws.com:8081
+    networks:
+      - spring-kubernetes
+    #this container depends on postgres14
+    depends_on:
+      - postgres14
+    #restart: always
+#define volumes
+volumes:
+  data-postgres:
+    name: data-postgres
+
+#define networks
+networks:
+  spring-kubernetes:
+    name: spring-kubernetes

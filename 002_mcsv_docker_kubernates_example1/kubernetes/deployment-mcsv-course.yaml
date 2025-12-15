@@ -1,0 +1,50 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: mcsv-courses-container
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: mcsv-courses-container
+  template:
+    metadata:
+      labels:
+        app: mcsv-courses-container
+    spec:
+      containers:
+      - image: daniella03/mcsv-course:v4
+        name: mcsv-courses-container
+        ports:
+        - containerPort: 8082
+        env:  
+          - name: PORT
+            valueFrom:
+              configMapKeyRef:
+                name: mcsv-courses-container
+                key: port 
+          - name: DB_HOST
+            valueFrom:
+              configMapKeyRef:
+                name: mcsv-courses-container
+                key: db_host
+          - name: DB_DATABASE
+            valueFrom:
+              configMapKeyRef:
+                name: mcsv-courses-container
+                key: database
+          - name: DB_USERNAME
+            valueFrom:
+              secretKeyRef:
+                name: mcsv-courses-container
+                key: username
+          - name: DB_PASSWORD
+            valueFrom:
+              secretKeyRef:
+                name: mcsv-courses-container
+                key: password
+          - name: USER_URL
+            valueFrom:
+              configMapKeyRef:
+                name: mcsv-courses-container
+                key: user_url

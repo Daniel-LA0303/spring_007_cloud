@@ -1,0 +1,93 @@
+version: "3.9"
+services:
+  #container 3
+  mysql8:
+    container_name: mysql8
+    image: mysql:8
+    ports:
+      - "3307:3306"
+    environment:
+      MYSQL_ROOT_PASSWORD: 1234
+      MYSQL_DATABASE: spring_014_db_mcsv_user
+    volumes:
+      - data-mysql:/var/lib/mysql
+    #restart: always
+    networks:
+      - spring-kubernetes
+  #container 4
+  postgres14:
+    container_name: postgres14
+    image: postgres:15-alpine
+    ports:
+      - "5533:5432"
+    environment:
+      POSTGRES_PASSWORD: 1234
+      POSTGRES_DB: spring_001_db_mcsv_course
+    volumes:
+      - data-postgres:/var/lib/postgresql/data
+    #restart: always
+    networks:
+      - spring-kubernetes
+  #container 1
+  mcsv-users-container:
+    container_name: mcsv-users-container
+    #download the image from docker hub
+    image: daniella03/mcsv-user
+    #we construct the image from the Dockerfile
+    #build:
+      #context: ./
+      #dockerfile: ./mcsv-user/Dockerfile
+    ports:
+      - "8081:8081"
+    environment:
+      PORT: 8081
+      DB_HOST: mysql8:3306
+      DB_DATABASE: spring_014_db_mcsv_user
+      DB_USERNAME: root
+      DB_PASSWORD: 1234
+      COURSE_URL: mcsv-courses-container:8082
+    networks:
+        - spring-kubernetes
+    #this container depends on mysql8
+    depends_on:
+        - mysql8
+    #restart: always
+  #container 2
+  mcsv-courses-container:
+    container_name: mcsv-courses-container
+    image: daniella03/mcsv-course
+    #we construct the image from the Dockerfile
+    #build:
+      #context: ./
+      #dockerfile: ./mcsv-course/Dockerfile
+    ports:
+      - "8082:8082"
+    environment:
+      PORT: 8082
+      DB_HOST: postgres14:5432
+      DB_DATABASE: spring_001_db_mcsv_course
+      DB_USERNAME: postgres
+      DB_PASSWORD: 1234
+      USER_URL: mcsv-users-container:8081
+    networks:
+      - spring-kubernetes
+    #this container depends on postgres14
+    depends_on:
+      - postgres14
+      - mcsv-users-container
+    #restart: always
+#define volumes
+volumes:
+  data-mysql:
+    # name: data-mysqlcreate in this case create the volume
+    external: true #this is to use the volume created by the command docker volume create data-mysql
+  data-postgres:
+    #name: data-postgres in this case create the volume
+    external: true #this is to use the volume created by the command docker volume create data-postgres
+
+#define networks
+networks:
+  spring-kubernetes:
+    external: true
+
+

@@ -1,0 +1,8 @@
+spring:
+  application:
+    name: service-user
+  cloud:
+    config:
+      uri: http://localhost:8081
+      enabled: true
+      fail-fast: true

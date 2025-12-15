@@ -1,0 +1,25 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: mcsv-users-container
+data:
+  lb_auth_issuer_uri: http://127.0.0.1:51306
+  lb_users_uri: http://127.0.0.1:50590
+  port: "8081"
+  db_host: "mysql8"
+  database: "spring_014_db_mcsv_user"
+  username: "root"
+  password: "1234"
+  course_url: "mcsv-courses-container:8082"
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: mcsv-courses-container
+data:
+  port: "8082"
+  db_host: "postgres14"
+  database: "spring_001_db_mcsv_course"
+  username: "postgres"
+  password: "1234"
+  user_url: "mcsv-users-container:8081"
